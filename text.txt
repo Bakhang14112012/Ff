@@ -1,0 +1,52 @@
+local validKey = "khangishere" -- Thay bằng key hợp lệ của bạn
+
+-- Tạo GUI nhập key
+local ScreenGui = Instance.new("ScreenGui")
+local Frame = Instance.new("Frame")
+local TextBox = Instance.new("TextBox")
+local SubmitButton = Instance.new("TextButton")
+
+-- Đặt GUI vào PlayerGui
+ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+
+-- Cài đặt Frame (cửa sổ nhập key)
+Frame.Parent = ScreenGui
+Frame.BackgroundColor3 = Color3.new(0.1, 0.1, 0.1)
+Frame.Size = UDim2.new(0.3, 0, 0.2, 0)
+Frame.Position = UDim2.new(0.35, 0, 0.4, 0)
+Frame.Visible = true
+
+-- Cài đặt TextBox (ô nhập key)
+TextBox.Parent = Frame
+TextBox.Size = UDim2.new(0.8, 0, 0.4, 0)
+TextBox.Position = UDim2.new(0.1, 0, 0.1, 0)
+TextBox.PlaceholderText = "Nhập mã key..."
+TextBox.TextScaled = true
+TextBox.Text = ""
+
+-- Cài đặt SubmitButton (nút xác nhận)
+SubmitButton.Parent = Frame
+SubmitButton.Size = UDim2.new(0.8, 0, 0.3, 0)
+SubmitButton.Position = UDim2.new(0.1, 0, 0.6, 0)
+SubmitButton.BackgroundColor3 = Color3.new(0.2, 0.8, 0.2)
+SubmitButton.Text = "Xác nhận"
+SubmitButton.TextScaled = true
+
+-- Hàm khởi tạo GUI chính (thay thế bằng loadstring)
+local function initializeMainGUI()
+    ScreenGui:Destroy() -- Xóa GUI nhập key sau khi xác nhận
+    -- Tải và chạy script từ URL
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/Bakhang14112012/Ff/refs/heads/main/script.txt"))()
+end
+
+-- Xử lý khi nhấn nút xác nhận
+SubmitButton.MouseButton1Click:Connect(function()
+    if TextBox.Text == validKey then
+        print("Key chính xác! Truy cập được cấp.")
+        initializeMainGUI() -- Gọi hàm khởi tạo GUI chính
+    else
+        TextBox.Text = ""
+        TextBox.PlaceholderText = "Sai key, thử lại!"
+        print("Key không hợp lệ!")
+    end
+end)
