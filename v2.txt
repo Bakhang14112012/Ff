@@ -1,143 +1,236 @@
-local validKey = "khangishere" -- Thay bằng key hợp lệ của bạn
+local playerName = game.Players.LocalPlayer.Name -- Lấy tên tài khoản
+local validKey = "khangishere" -- Key hợp lệ
 
--- Tạo GUI nhập key
+-- Tạo GUI chính
 local ScreenGui = Instance.new("ScreenGui")
-local Frame = Instance.new("Frame")
-local TextBox = Instance.new("TextBox")
-local SubmitButton = Instance.new("TextButton")
-
--- Giao diện tiến trình (4 mốc)
+local KeyFrame = Instance.new("Frame")
 local ProgressFrame = Instance.new("Frame")
-local ProgressLabel = Instance.new("TextLabel")
 local ProgressBar = Instance.new("Frame")
-local ProgressBarFill = Instance.new("Frame")
-local WelcomeLabel = Instance.new("TextLabel") -- Dòng chào người dùng
+local ProgressText = Instance.new("TextLabel")
+local KeyTextBox = Instance.new("TextBox")
+local SubmitButton = Instance.new("TextButton")
+local WelcomeFrame = Instance.new("Frame")
+local WelcomeLabel = Instance.new("TextLabel")
+local OptionFrame = Instance.new("Frame")
+local Option1 = Instance.new("TextButton")
+local Option2 = Instance.new("TextButton")
+local ConfirmButton = Instance.new("TextButton")
+local TweenService = game:GetService("TweenService")
+local selectedOption = nil -- Tuỳ chọn người dùng chọn
 
--- Đặt GUI vào PlayerGui
+-- Đặt ScreenGui vào PlayerGui
 ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 
--- Cài đặt Frame (cửa sổ nhập key)
-Frame.Parent = ScreenGui
-Frame.BackgroundColor3 = Color3.new(0.15, 0.15, 0.15) -- Màu xám
-Frame.Size = UDim2.new(0.4, 0, 0.25, 0) -- Kích thước
-Frame.Position = UDim2.new(0.3, 0, 0.35, 0) -- Vị trí ở giữa màn hình
-Frame.Visible = true
-Frame.BorderSizePixel = 0
+-- Thông báo chào mừng
+WelcomeFrame.Parent = ScreenGui
+WelcomeFrame.Size = UDim2.new(0.3, 0, 0.1, 0)
+WelcomeFrame.Position = UDim2.new(1, 0, 0.05, 0) -- Xuất hiện bên ngoài màn hình
+WelcomeFrame.BackgroundColor3 = Color3.fromRGB(144, 238, 144) -- Màu xanh lá nhạt
+WelcomeFrame.BorderSizePixel = 0
 
--- Làm bo góc cho Frame
-local FrameCorner = Instance.new("UICorner", Frame)
-FrameCorner.CornerRadius = UDim.new(0.1, 0)
+local WelcomeFrameCorner = Instance.new("UICorner", WelcomeFrame)
+WelcomeFrameCorner.CornerRadius = UDim.new(0.1, 0)
 
--- Cài đặt TextBox (ô nhập key)
-TextBox.Parent = Frame
-TextBox.Size = UDim2.new(0.8, 0, 0.3, 0)
-TextBox.Position = UDim2.new(0.1, 0, 0.2, 0)
-TextBox.PlaceholderText = "Nhập mã key..."
-TextBox.TextScaled = true
-TextBox.Text = ""
-TextBox.BackgroundColor3 = Color3.new(0.2, 0.2, 0.2) -- Màu xám đậm
-TextBox.TextColor3 = Color3.new(1, 1, 1) -- Màu chữ trắng
-TextBox.Font = Enum.Font.SourceSans
-TextBox.BorderSizePixel = 0
+WelcomeLabel.Parent = WelcomeFrame
+WelcomeLabel.Size = UDim2.new(1, 0, 1, 0)
+WelcomeLabel.BackgroundTransparency = 1
+WelcomeLabel.Text = "Welcome! " .. playerName
+WelcomeLabel.TextScaled = true
+WelcomeLabel.TextColor3 = Color3.new(0, 0, 0) -- Màu chữ đen
+WelcomeLabel.Font = Enum.Font.GothamBold
 
--- Làm bo góc cho TextBox
-local TextBoxCorner = Instance.new("UICorner", TextBox)
+-- Di chuyển thông báo vào màn hình
+local enterTween = TweenService:Create(
+    WelcomeFrame,
+    TweenInfo.new(0.8, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
+    { Position = UDim2.new(0.7, 0, 0.05, 0) } -- Hiển thị trong màn hình
+)
+enterTween:Play()
+
+-- Đóng thông báo sau 10 giây
+enterTween.Completed:Connect(function()
+    wait(10)
+    local exitTween = TweenService:Create(
+        WelcomeFrame,
+        TweenInfo.new(0.8, Enum.EasingStyle.Quint, Enum.EasingDirection.In),
+        { Position = UDim2.new(1, 0, 0.05, 0) } -- Di chuyển ra ngoài màn hình
+    )
+    exitTween:Play()
+    exitTween.Completed:Connect(function()
+        WelcomeFrame:Destroy() -- Xóa GUI thông báo
+    end)
+end)
+
+-- Giao diện nhập key
+KeyFrame.Parent = ScreenGui
+KeyFrame.Size = UDim2.new(0.3, 0, 0.2, 0)
+KeyFrame.Position = UDim2.new(0.35, 0, 0.4, 0)
+KeyFrame.BackgroundColor3 = Color3.new(0.1, 0.1, 0.1)
+KeyFrame.BorderSizePixel = 0
+
+local KeyFrameCorner = Instance.new("UICorner", KeyFrame)
+KeyFrameCorner.CornerRadius = UDim.new(0.1, 0)
+
+-- Key TextBox
+KeyTextBox.Parent = KeyFrame
+KeyTextBox.Size = UDim2.new(0.8, 0, 0.4, 0)
+KeyTextBox.Position = UDim2.new(0.1, 0, 0.1, 0)
+KeyTextBox.PlaceholderText = "Nhập mã key..."
+KeyTextBox.TextScaled = true
+KeyTextBox.BackgroundColor3 = Color3.new(0.2, 0.2, 0.2)
+KeyTextBox.TextColor3 = Color3.new(1, 1, 1)
+KeyTextBox.Font = Enum.Font.GothamBold
+
+local TextBoxCorner = Instance.new("UICorner", KeyTextBox)
 TextBoxCorner.CornerRadius = UDim.new(0.1, 0)
 
--- Cài đặt SubmitButton (nút xác nhận)
-SubmitButton.Parent = Frame
+-- Submit Button
+SubmitButton.Parent = KeyFrame
 SubmitButton.Size = UDim2.new(0.8, 0, 0.3, 0)
 SubmitButton.Position = UDim2.new(0.1, 0, 0.6, 0)
-SubmitButton.BackgroundColor3 = Color3.new(0.2, 0.8, 0.2) -- Màu xanh lá
+SubmitButton.BackgroundColor3 = Color3.new(0.2, 0.8, 0.2)
 SubmitButton.Text = "Xác nhận"
 SubmitButton.TextScaled = true
-SubmitButton.Font = Enum.Font.SourceSans
 SubmitButton.TextColor3 = Color3.new(1, 1, 1)
-SubmitButton.BorderSizePixel = 0
+SubmitButton.Font = Enum.Font.GothamBold
 
--- Làm bo góc cho SubmitButton
 local ButtonCorner = Instance.new("UICorner", SubmitButton)
 ButtonCorner.CornerRadius = UDim.new(0.1, 0)
 
--- Giao diện tiến trình
-ProgressFrame.Parent = ScreenGui
-ProgressFrame.BackgroundColor3 = Color3.new(0.1, 0.1, 0.1) -- Màu xám
-ProgressFrame.Size = UDim2.new(0.4, 0, 0.2, 0)
-ProgressFrame.Position = UDim2.new(0.3, 0, 0.4, 0)
-ProgressFrame.Visible = false
+-- Giao diện chọn Redz hoặc EzHub
+OptionFrame.Parent = ScreenGui
+OptionFrame.Size = UDim2.new(0.3, 0, 0.3, 0)
+OptionFrame.Position = UDim2.new(0.35, 0, 0.4, 0)
+OptionFrame.BackgroundColor3 = Color3.new(0.1, 0.1, 0.1)
+OptionFrame.Visible = false
 
--- Làm bo góc cho ProgressFrame
-local ProgressFrameCorner = Instance.new("UICorner", ProgressFrame)
-ProgressFrameCorner.CornerRadius = UDim.new(0.1, 0)
+local OptionFrameCorner = Instance.new("UICorner", OptionFrame)
+OptionFrameCorner.CornerRadius = UDim.new(0.1, 0)
 
-ProgressLabel.Parent = ProgressFrame
-ProgressLabel.Size = UDim2.new(1, 0, 0.3, 0)
-ProgressLabel.Position = UDim2.new(0, 0, 0.1, 0)
-ProgressLabel.TextScaled = true
-ProgressLabel.TextColor3 = Color3.new(1, 1, 1)
-ProgressLabel.Font = Enum.Font.SourceSans
-ProgressLabel.Text = "Đang tải..."
+Option1.Parent = OptionFrame
+Option1.Size = UDim2.new(0.8, 0, 0.3, 0)
+Option1.Position = UDim2.new(0.1, 0, 0.1, 0)
+Option1.BackgroundColor3 = Color3.new(0.3, 0.6, 0.9)
+Option1.Text = "Redz"
+Option1.TextScaled = true
+Option1.TextColor3 = Color3.new(1, 1, 1)
+Option1.Font = Enum.Font.GothamBold
 
-ProgressBar.Parent = ProgressFrame
-ProgressBar.BackgroundColor3 = Color3.new(0.2, 0.2, 0.2) -- Màu xám đậm
-ProgressBar.Size = UDim2.new(0.9, 0, 0.2, 0)
-ProgressBar.Position = UDim2.new(0.05, 0, 0.5, 0)
+local Option1Corner = Instance.new("UICorner", Option1)
+Option1Corner.CornerRadius = UDim.new(0.1, 0)
 
--- Làm bo góc cho ProgressBar
-local ProgressBarCorner = Instance.new("UICorner", ProgressBar)
-ProgressBarCorner.CornerRadius = UDim.new(0.1, 0)
+Option2.Parent = OptionFrame
+Option2.Size = UDim2.new(0.8, 0, 0.3, 0)
+Option2.Position = UDim2.new(0.1, 0, 0.5, 0)
+Option2.BackgroundColor3 = Color3.new(0.6, 0.3, 0.9)
+Option2.Text = "EzHub"
+Option2.TextScaled = true
+Option2.TextColor3 = Color3.new(1, 1, 1)
+Option2.Font = Enum.Font.GothamBold
 
-ProgressBarFill.Parent = ProgressBar
-ProgressBarFill.BackgroundColor3 = Color3.new(0, 0.6, 1) -- Màu xanh biển
-ProgressBarFill.Size = UDim2.new(0, 0, 1, 0) -- Ban đầu là 0%
-ProgressBarFill.Position = UDim2.new(0, 0, 0, 0)
+local Option2Corner = Instance.new("UICorner", Option2)
+Option2Corner.CornerRadius = UDim.new(0.1, 0)
 
--- Làm bo góc cho ProgressBarFill
-local ProgressBarFillCorner = Instance.new("UICorner", ProgressBarFill)
-ProgressBarFillCorner.CornerRadius = UDim.new(0.1, 0)
+ConfirmButton.Parent = OptionFrame
+ConfirmButton.Size = UDim2.new(0.8, 0, 0.2, 0)
+ConfirmButton.Position = UDim2.new(0.1, 0, 0.85, 0)
+ConfirmButton.BackgroundColor3 = Color3.new(0.2, 0.8, 0.2)
+ConfirmButton.Text = "Xác nhận"
+ConfirmButton.TextScaled = true
+ConfirmButton.TextColor3 = Color3.new(1, 1, 1)
+ConfirmButton.Font = Enum.Font.GothamBold
+ConfirmButton.Visible = false
 
--- Label chào người dùng
-WelcomeLabel.Parent = ProgressFrame
-WelcomeLabel.Size = UDim2.new(1, 0, 0.2, 0)
-WelcomeLabel.Position = UDim2.new(0, 0, 0.8, 0)
-WelcomeLabel.TextScaled = true
-WelcomeLabel.TextColor3 = Color3.new(1, 1, 1)
-WelcomeLabel.Font = Enum.Font.SourceSans
-WelcomeLabel.Text = "" -- Sẽ được gán tên tài khoản sau
+local ConfirmButtonCorner = Instance.new("UICorner", ConfirmButton)
+ConfirmButtonCorner.CornerRadius = UDim.new(0.1, 0)
 
--- Hàm hiển thị tiến trình
-local function updateProgress(step)
-    local steps = {
-        [1] = "Đang tải...",
-        [2] = "Kiểm tra...",
-        [3] = "Tối ưu...",
-        [4] = "Chuẩn bị..."
-    }
-    ProgressLabel.Text = steps[step]
-    ProgressBarFill:TweenSize(UDim2.new(step / 4, 0, 1, 0), "Out", "Quad", 1.5, true) -- Thanh tiến trình đầy dần
-    wait(2) -- Thời gian chờ mỗi bước
+-- Xử lý chọn tùy chọn
+local function updateSelection()
+    if selectedOption == "Redz" then
+        Option1.BackgroundColor3 = Color3.new(0, 1, 0) -- In đậm khi chọn
+        Option2.BackgroundColor3 = Color3.new(0.6, 0.3, 0.9)
+    elseif selectedOption == "EzHub" then
+        Option1.BackgroundColor3 = Color3.new(0.3, 0.6, 0.9)
+        Option2.BackgroundColor3 = Color3.new(0, 1, 0) -- In đậm khi chọn
+    end
 end
 
--- Xử lý khi nhấn nút xác nhận
+Option1.MouseButton1Click:Connect(function()
+    selectedOption = "Redz"
+    ConfirmButton.Visible = true
+    updateSelection()
+end)
+
+Option2.MouseButton1Click:Connect(function()
+    selectedOption = "EzHub"
+    ConfirmButton.Visible = true
+    updateSelection()
+end)
+
+-- Xử lý nhập key
 SubmitButton.MouseButton1Click:Connect(function()
-    local enteredKey = TextBox.Text
-    if enteredKey == validKey then
-        print("Key chính xác! Đang tải script...")
-        
-        -- Hiển thị tiến trình
-        Frame.Visible = false
+    if KeyTextBox.Text == validKey then
+        KeyFrame.Visible = false
+        OptionFrame.Visible = true
+    else
+        KeyTextBox.Text = ""
+        KeyTextBox.PlaceholderText = "Sai key, thử lại!"
+    end
+end)
+
+-- Xử lý xác nhận và tiến trình
+ConfirmButton.MouseButton1Click:Connect(function()
+    if selectedOption then
+        OptionFrame.Visible = false
         ProgressFrame.Visible = true
-        WelcomeLabel.Text = "Hello " .. game.Players.LocalPlayer.Name .. ", thank you for using!" -- Thêm lời chào
-        
-        for step = 1, 4 do
-            updateProgress(step)
+
+        -- Tạo ProgressFrame
+        ProgressFrame.Parent = ScreenGui
+        ProgressFrame.Size = UDim2.new(0.4, 0, 0.1, 0)
+        ProgressFrame.Position = UDim2.new(0.3, 0, 0.45, 0)
+        ProgressFrame.BackgroundColor3 = Color3.new(0.1, 0.1, 0.1)
+
+        local ProgressFrameCorner = Instance.new("UICorner", ProgressFrame)
+        ProgressFrameCorner.CornerRadius = UDim.new(0.1, 0)
+
+        ProgressBar.Parent = ProgressFrame
+        ProgressBar.Size = UDim2.new(0, 0, 1, 0)
+        ProgressBar.BackgroundColor3 = Color3.new(0.2, 0.8, 0.2)
+
+        local ProgressBarCorner = Instance.new("UICorner", ProgressBar)
+        ProgressBarCorner.CornerRadius = UDim.new(0.1, 0)
+
+        ProgressText.Parent = ProgressFrame
+        ProgressText.Size = UDim2.new(1, 0, 1, 0)
+        ProgressText.BackgroundTransparency = 1
+        ProgressText.Text = "Chuẩn bị..."
+        ProgressText.TextScaled = true
+        ProgressText.TextColor3 = Color3.new(1, 1, 1)
+        ProgressText.Font = Enum.Font.GothamBold
+
+        -- Tiến trình tải
+        local stages = { "Chuẩn bị...", "Tối ưu...", "Kiểm tra...", "Khởi động..." }
+        for i, stage in ipairs(stages) do
+            ProgressText.Text = stage
+            ProgressBar:TweenSize(
+                UDim2.new(i / #stages, 0, 1, 0),
+                Enum.EasingDirection.Out,
+                Enum.EasingStyle.Linear,
+                0.8
+            )
+            wait(1.5)
         end
 
-        ProgressFrame.Visible = false
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/Bakhang14112012/Ff/refs/heads/main/script.txt"))()
-    else
-        TextBox.Text = ""
-        TextBox.PlaceholderText = "Sai key, thử lại!"
-        print("Key không hợp lệ!")
+        -- Hoàn tất
+        ProgressText.Text = "Hoàn tất!"
+        wait(3)
+
+        -- Chạy script theo tùy chọn
+        ScreenGui:Destroy()
+        if selectedOption == "Redz" then
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/realredz/BloxFruits/refs/heads/main/Source.lua"))()
+        elseif selectedOption == "EzHub" then
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/Bakhang14112012/Ff/refs/heads/main/script.txt"))()
+        end
     end
 end)
