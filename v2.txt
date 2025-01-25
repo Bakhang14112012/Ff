@@ -1,0 +1,143 @@
+local validKey = "khangishere" -- Thay bằng key hợp lệ của bạn
+
+-- Tạo GUI nhập key
+local ScreenGui = Instance.new("ScreenGui")
+local Frame = Instance.new("Frame")
+local TextBox = Instance.new("TextBox")
+local SubmitButton = Instance.new("TextButton")
+
+-- Giao diện tiến trình (4 mốc)
+local ProgressFrame = Instance.new("Frame")
+local ProgressLabel = Instance.new("TextLabel")
+local ProgressBar = Instance.new("Frame")
+local ProgressBarFill = Instance.new("Frame")
+local WelcomeLabel = Instance.new("TextLabel") -- Dòng chào người dùng
+
+-- Đặt GUI vào PlayerGui
+ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+
+-- Cài đặt Frame (cửa sổ nhập key)
+Frame.Parent = ScreenGui
+Frame.BackgroundColor3 = Color3.new(0.15, 0.15, 0.15) -- Màu xám
+Frame.Size = UDim2.new(0.4, 0, 0.25, 0) -- Kích thước
+Frame.Position = UDim2.new(0.3, 0, 0.35, 0) -- Vị trí ở giữa màn hình
+Frame.Visible = true
+Frame.BorderSizePixel = 0
+
+-- Làm bo góc cho Frame
+local FrameCorner = Instance.new("UICorner", Frame)
+FrameCorner.CornerRadius = UDim.new(0.1, 0)
+
+-- Cài đặt TextBox (ô nhập key)
+TextBox.Parent = Frame
+TextBox.Size = UDim2.new(0.8, 0, 0.3, 0)
+TextBox.Position = UDim2.new(0.1, 0, 0.2, 0)
+TextBox.PlaceholderText = "Nhập mã key..."
+TextBox.TextScaled = true
+TextBox.Text = ""
+TextBox.BackgroundColor3 = Color3.new(0.2, 0.2, 0.2) -- Màu xám đậm
+TextBox.TextColor3 = Color3.new(1, 1, 1) -- Màu chữ trắng
+TextBox.Font = Enum.Font.SourceSans
+TextBox.BorderSizePixel = 0
+
+-- Làm bo góc cho TextBox
+local TextBoxCorner = Instance.new("UICorner", TextBox)
+TextBoxCorner.CornerRadius = UDim.new(0.1, 0)
+
+-- Cài đặt SubmitButton (nút xác nhận)
+SubmitButton.Parent = Frame
+SubmitButton.Size = UDim2.new(0.8, 0, 0.3, 0)
+SubmitButton.Position = UDim2.new(0.1, 0, 0.6, 0)
+SubmitButton.BackgroundColor3 = Color3.new(0.2, 0.8, 0.2) -- Màu xanh lá
+SubmitButton.Text = "Xác nhận"
+SubmitButton.TextScaled = true
+SubmitButton.Font = Enum.Font.SourceSans
+SubmitButton.TextColor3 = Color3.new(1, 1, 1)
+SubmitButton.BorderSizePixel = 0
+
+-- Làm bo góc cho SubmitButton
+local ButtonCorner = Instance.new("UICorner", SubmitButton)
+ButtonCorner.CornerRadius = UDim.new(0.1, 0)
+
+-- Giao diện tiến trình
+ProgressFrame.Parent = ScreenGui
+ProgressFrame.BackgroundColor3 = Color3.new(0.1, 0.1, 0.1) -- Màu xám
+ProgressFrame.Size = UDim2.new(0.4, 0, 0.2, 0)
+ProgressFrame.Position = UDim2.new(0.3, 0, 0.4, 0)
+ProgressFrame.Visible = false
+
+-- Làm bo góc cho ProgressFrame
+local ProgressFrameCorner = Instance.new("UICorner", ProgressFrame)
+ProgressFrameCorner.CornerRadius = UDim.new(0.1, 0)
+
+ProgressLabel.Parent = ProgressFrame
+ProgressLabel.Size = UDim2.new(1, 0, 0.3, 0)
+ProgressLabel.Position = UDim2.new(0, 0, 0.1, 0)
+ProgressLabel.TextScaled = true
+ProgressLabel.TextColor3 = Color3.new(1, 1, 1)
+ProgressLabel.Font = Enum.Font.SourceSans
+ProgressLabel.Text = "Đang tải..."
+
+ProgressBar.Parent = ProgressFrame
+ProgressBar.BackgroundColor3 = Color3.new(0.2, 0.2, 0.2) -- Màu xám đậm
+ProgressBar.Size = UDim2.new(0.9, 0, 0.2, 0)
+ProgressBar.Position = UDim2.new(0.05, 0, 0.5, 0)
+
+-- Làm bo góc cho ProgressBar
+local ProgressBarCorner = Instance.new("UICorner", ProgressBar)
+ProgressBarCorner.CornerRadius = UDim.new(0.1, 0)
+
+ProgressBarFill.Parent = ProgressBar
+ProgressBarFill.BackgroundColor3 = Color3.new(0, 0.6, 1) -- Màu xanh biển
+ProgressBarFill.Size = UDim2.new(0, 0, 1, 0) -- Ban đầu là 0%
+ProgressBarFill.Position = UDim2.new(0, 0, 0, 0)
+
+-- Làm bo góc cho ProgressBarFill
+local ProgressBarFillCorner = Instance.new("UICorner", ProgressBarFill)
+ProgressBarFillCorner.CornerRadius = UDim.new(0.1, 0)
+
+-- Label chào người dùng
+WelcomeLabel.Parent = ProgressFrame
+WelcomeLabel.Size = UDim2.new(1, 0, 0.2, 0)
+WelcomeLabel.Position = UDim2.new(0, 0, 0.8, 0)
+WelcomeLabel.TextScaled = true
+WelcomeLabel.TextColor3 = Color3.new(1, 1, 1)
+WelcomeLabel.Font = Enum.Font.SourceSans
+WelcomeLabel.Text = "" -- Sẽ được gán tên tài khoản sau
+
+-- Hàm hiển thị tiến trình
+local function updateProgress(step)
+    local steps = {
+        [1] = "Đang tải...",
+        [2] = "Kiểm tra...",
+        [3] = "Tối ưu...",
+        [4] = "Chuẩn bị..."
+    }
+    ProgressLabel.Text = steps[step]
+    ProgressBarFill:TweenSize(UDim2.new(step / 4, 0, 1, 0), "Out", "Quad", 1.5, true) -- Thanh tiến trình đầy dần
+    wait(2) -- Thời gian chờ mỗi bước
+end
+
+-- Xử lý khi nhấn nút xác nhận
+SubmitButton.MouseButton1Click:Connect(function()
+    local enteredKey = TextBox.Text
+    if enteredKey == validKey then
+        print("Key chính xác! Đang tải script...")
+        
+        -- Hiển thị tiến trình
+        Frame.Visible = false
+        ProgressFrame.Visible = true
+        WelcomeLabel.Text = "Hello " .. game.Players.LocalPlayer.Name .. ", thank you for using!" -- Thêm lời chào
+        
+        for step = 1, 4 do
+            updateProgress(step)
+        end
+
+        ProgressFrame.Visible = false
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Bakhang14112012/Ff/refs/heads/main/script.txt"))()
+    else
+        TextBox.Text = ""
+        TextBox.PlaceholderText = "Sai key, thử lại!"
+        print("Key không hợp lệ!")
+    end
+end)
